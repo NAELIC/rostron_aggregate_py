@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'simple_filter = rostron_filters_py.simple_filter:main'
+            'minimal_filter = rostron_filters_py.minimal_filter:main'
         ],
     },
 )

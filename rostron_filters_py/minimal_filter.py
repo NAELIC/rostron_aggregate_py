@@ -1,18 +1,16 @@
 import rclpy
 from rclpy.node import Node
-from .utils.Ball import Ball
-from .utils.Robot import Robot
 from .utils.StatePublisher import StatePublisher
 
-from rostron_interfaces.msg import DetectionFrame, Robots as RobotsMsg, Ball as BallMsg, Robot as RobotMsg
+from rostron_interfaces.msg import DetectionFrame, Robot, Ball, Robots
 
 
 class MinimalFilter(Node):
     def __init__(self):
         super().__init__('minimal_filter')
         self.ball = Ball()
-        self.y_robots = [Robot() for c in range(16)]
-        self.b_robots = [Robot() for c in range(16)]
+        self.y_robots = Robots()
+        self.b_robots = Robots()
         self.state_pub_ = StatePublisher(self)
 
         self.subscription = self.create_subscription(
@@ -25,15 +23,17 @@ class MinimalFilter(Node):
     def vision_callback(self, msg: DetectionFrame):
         # balls
         for ball in msg.balls:
-            self.ball.update(ball.position)
+            self.ball.position = ball.position
 
         for r in msg.yellow:
             if r.confidence > 0.5:
-                self.y_robots[r.id].update(r.pose)
+                self.y_robots.robots[r.id].pose = r.pose
+                self.y_robots.robots[r.id].active = True
 
         for r in msg.blue:
             if r.confidence > 0.5:
-                self.b_robots[r.id].update(r.pose)
+                self.b_robots.robots[r.id].pose = r.pose
+                self.b_robots.robots[r.id].active = True
 
     def timer_callback(self):
         self.state_pub_.publish_ball(self.ball)
@@ -43,12 +43,12 @@ class MinimalFilter(Node):
     def debug():
         self.get_logger().info(self.ball.debug())
 
-        for id, r in enumerate(self.y_robots):
+        for id, r in enumerate(self.y_robots.robots):
             if r.active:
                 self.get_logger().info(
                     '[yellow] "%d" : "%s"' % (id, r.debug()))
 
-        for id, r in enumerate(self.b_robots):
+        for id, r in enumerate(self.b_robots.robots):
             if r.active:
                 self.get_logger().info('[blue] "%d" : "%s"' % (id, r.debug()))
 

@@ -14,29 +14,14 @@ class StatePublisher():
             RobotMsg, 'opponents/r_%d' % c, 10) for c in range(16)]
 
     def publish_ball(self, ball):
-        msg = BallMsg()
-        msg.position = ball.position
-        self.pub_ball_.publish(msg)
+        self.pub_ball_.publish(ball)
 
     def publish_allies(self, allies):
-        msg = RobotsMsg()
-        for id, r in enumerate(allies):
-            msg_r = self.create_msg_robot(r, id)
-            msg.robots[id] = msg_r
-            self.pub_allies_arr_[id].publish(msg_r)
-        self.pub_allies_.publish(msg)
+        for id, r in enumerate(allies.robots):
+            self.pub_allies_arr_[id].publish(r)
+        self.pub_allies_.publish(allies)
 
     def publish_opponents(self, opponents):
-        msg = RobotsMsg()
-        for id, r in enumerate(opponents):
-            msg_r = self.create_msg_robot(r, id)
-            msg.robots[id] = msg_r
-            self.pub_opponents_arr_[id].publish(msg_r)
-        self.pub_opponents_.publish(msg)
-
-    def create_msg_robot(self, r, id):
-        msg_r = RobotMsg()
-        msg_r.id = id
-        msg_r.pose = r.pose
-        msg_r.active = r.active
-        return msg_r
+        for id, r in enumerate(opponents.robots):
+            self.pub_opponents_arr_[id].publish(r)
+        self.pub_opponents_.publish(opponents)

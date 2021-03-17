@@ -9,8 +9,14 @@ class MinimalFilter(Node):
     def __init__(self):
         super().__init__('minimal_filter')
         self.ball = Ball()
+        
         self.y_robots = Robots()
+        for id, r in enumerate(self.y_robots.robots):
+            self.y_robots.robots[id].id = id
         self.b_robots = Robots()
+        for id, r in enumerate(self.b_robots.robots):
+            self.b_robots.robots[id].id = id
+
         self.state_pub_ = StatePublisher(self)
 
         self.subscription = self.create_subscription(

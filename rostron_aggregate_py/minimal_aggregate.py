@@ -7,7 +7,7 @@ from rostron_interfaces.msg import DetectionFrame, Robot, Ball, Robots
 
 class MinimalFilter(Node):
     def __init__(self):
-        super().__init__('minimal_filter')
+        super().__init__('minimal_aggregate')
         self.ball = Ball()
         
         self.y_robots = Robots()

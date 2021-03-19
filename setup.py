@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'rostron_filters_py'
+package_name = 'rostron_aggregate_py'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'minimal_filter = rostron_filters_py.minimal_filter:main'
+            'minimal_aggregate = rostron_aggregate_py.minimal_aggregate:main'
         ],
     },
 )

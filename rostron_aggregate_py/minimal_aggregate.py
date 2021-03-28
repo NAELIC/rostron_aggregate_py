@@ -6,19 +6,33 @@ from rostron_interfaces.msg import DetectionFrame, Robot, Ball, Robots
 
 
 class MinimalFilter(Node):
+    is_yellow_ = True
+    ball = Ball()
+    y_robots = Robots()
+    b_robots = Robots()
+
     def __init__(self):
         super().__init__('minimal_aggregate')
-        self.ball = Ball()
-        
-        self.y_robots = Robots()
+
+        # Parameters
+        self.declare_parameter('yellow', True)
+        self.declare_parameter('publish_robots', [0])
+
+        for id in self.get_parameter('publish_robots').get_parameter_value().integer_array_value:
+            self.get_logger().info('%d' % id)
+
+        # Initialisation
+        self.is_yellow_ = self.get_parameter(
+            'yellow').get_parameter_value().bool_value
+        self.state_pub_ = StatePublisher(self, self.get_parameter(
+            'publish_robots').get_parameter_value().integer_array_value)
+
         for id, r in enumerate(self.y_robots.robots):
             self.y_robots.robots[id].id = id
-        self.b_robots = Robots()
         for id, r in enumerate(self.b_robots.robots):
             self.b_robots.robots[id].id = id
 
-        self.state_pub_ = StatePublisher(self)
-
+        # Create subscription and timers
         self.subscription = self.create_subscription(
             DetectionFrame,
             'vision',
@@ -27,7 +41,6 @@ class MinimalFilter(Node):
         self.timer = self.create_timer(0.16, self.timer_callback)
 
     def vision_callback(self, msg: DetectionFrame):
-        # balls
         for ball in msg.balls:
             self.ball.position = ball.position
 
@@ -43,20 +56,22 @@ class MinimalFilter(Node):
 
     def timer_callback(self):
         self.state_pub_.publish_ball(self.ball)
-        self.state_pub_.publish_allies(self.y_robots)
-        self.state_pub_.publish_opponents(self.b_robots)
+        self.state_pub_.publish_allies(
+            self.y_robots if self.is_yellow_ else self.b_robots)
+        self.state_pub_.publish_opponents(
+            self.b_robots if self.is_yellow_ else self.y_robots)
 
     def debug():
-        self.get_logger().info(self.ball.debug())
+        self.get_logger().debug(self.ball.debug())
 
         for id, r in enumerate(self.y_robots.robots):
             if r.active:
-                self.get_logger().info(
+                self.get_logger().debug(
                     '[yellow] "%d" : "%s"' % (id, r.debug()))
 
         for id, r in enumerate(self.b_robots.robots):
             if r.active:
-                self.get_logger().info('[blue] "%d" : "%s"' % (id, r.debug()))
+                self.get_logger().debug('[blue] "%d" : "%s"' % (id, r.debug()))
 
 
 def main(args=None):

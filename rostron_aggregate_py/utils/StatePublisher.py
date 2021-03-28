@@ -11,7 +11,7 @@ class StatePublisher():
 
         self.pub_allies_ = self.node_.create_publisher(RobotsMsg, 'allies', 10)
         self.pub_allies_arr_ = [self.node_.create_publisher(
-            RobotMsg, 'allies/r_%d' % id, 10) for id in self.publish_robots_]
+            RobotMsg, 'allies/r_%d' % id, 10) for id in publish_robots]
         
         self.pub_opponents_ = self.node_.create_publisher(RobotsMsg, 'opponents', 10)
 

@@ -18,9 +18,6 @@ class MinimalFilter(Node):
         self.declare_parameter('yellow', True)
         self.declare_parameter('publish_robots', [0])
 
-        for id in self.get_parameter('publish_robots').get_parameter_value().integer_array_value:
-            self.get_logger().info('%d' % id)
-
         # Initialisation
         self.is_yellow_ = self.get_parameter(
             'yellow').get_parameter_value().bool_value

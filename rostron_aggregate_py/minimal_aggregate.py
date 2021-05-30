@@ -58,7 +58,7 @@ class MinimalFilter(Node):
         self.state_pub_.publish_opponents(
             self.b_robots if self.is_yellow_ else self.y_robots)
 
-    def debug():
+    def debug(self):
         self.get_logger().debug(self.ball.debug())
 
         for id, r in enumerate(self.y_robots.robots):

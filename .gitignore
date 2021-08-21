@@ -1,2 +1,6 @@
+# VSCode
 log/
 .vscode
+
+# Python
+__pycache__/
